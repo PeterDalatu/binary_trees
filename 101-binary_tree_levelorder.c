@@ -1,69 +1,59 @@
 #include "binary_trees.h"
 
 /**
- * binary_tree_height - To measures the height of a binary tree
+ * binary_tree_height - measures the height of a binary tree.
+ * @tree: a pointer to the root node of the tree to measure the height.
  *
- * @tree:A Pointer to the root node of the tree to measure the height
- *
- * Return: The Height of tree, or 0 if tree is NULL
+ * Return: height of the tree or 0 If tree is NULL
  */
 size_t binary_tree_height(const binary_tree_t *tree)
 {
-	size_t height_left;
-	size_t height_right;
+	if (tree)
+	{
+		size_t left_height = 0, right_height = 0;
 
-	if (tree == NULL)
-		return (0);
+		left_height = tree->left ? (1 + binary_tree_height(tree->left)) : 0;
+		right_height = tree->right ? (1 + binary_tree_height(tree->right)) : 0;
 
-	height_left = binary_tree_height(tree->left);
-	height_left++;
-	height_right = binary_tree_height(tree->right);
-	height_right++;
-
-	if (height_left > height_right)
-		return (height_left);
-	else
-		return (height_right);
+		return (left_height > right_height ? left_height : right_height);
+	}
+	return (0);
 }
 
 /**
- * levelorder - To Performs a level-order traversal using a binary tree
- *
- * @tree: A Pointer to the root node of the tree to traverse
- * @func: A Pointer to a function to call for each node
- * @level:The level of the tree
+ * helper - helps in printing values from left to right
+ *	    in each binary tree level.
+ * @level: level of binary tree to print.
+ * @func: pointer to a function that is used to print values.
+ * @tree: a pointer to the root binary tree.
  */
-void levelorder(const binary_tree_t *tree, void (*func)(int), size_t level)
+void helper(size_t level, const binary_tree_t *tree, void (*func)(int))
 {
-	if (tree == NULL || func == NULL)
-		return;
-
 	if (level == 1)
 		func(tree->n);
 	else
 	{
-		levelorder(tree->left, func, level - 1);
-		levelorder(tree->right, func, level - 1);
+		helper(level - 1, tree->left, func);
+		helper(level - 1, tree->right, func);
 	}
 }
 
 /**
- * binary_tree_levelorder - It goes through a binary tree
- * using level-order traversal
- *
- * @tree:A Pointer to the root node of the tree to traverse
- * @func:A Pointer to a function to call for each node
+ * binary_tree_levelorder - goes through a binary tree
+ *			    using level-order traversal.
+ * @tree: a pointer to the root node of the tree to traverse.
+ * @func: a pointer to a function to call for each node.
+ *	  The value in the node must be passed as a parameter to this function.
  */
 void binary_tree_levelorder(const binary_tree_t *tree, void (*func)(int))
 {
-	size_t count = 0;
-
-	if (tree == NULL || func == NULL)
-		return;
-
-	while (binary_tree_height(tree) > count)
+	if (tree && func)
 	{
-		levelorder(tree, func, count);
-		count++;
+		size_t level, tree_levels;
+
+		tree_levels = binary_tree_height(tree) + 1;
+
+		for (level = 1; level <= tree_levels; level++)
+			helper(level, tree, func);
 	}
 }
